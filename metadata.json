@@ -1,0 +1,6 @@
+{
+  "name": "CODELAND",
+  "description": "A 3D voxel-inspired gamified Java programming education and adventure platform featuring 100 progressive Java levels across 6 story worlds, daily streak goals, private multiplayer rooms, and leaderboards.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

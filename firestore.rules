@@ -1,0 +1,827 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Pillar 4.1: Global Safety Net (Default-Deny)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global Hardened Primitives
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidDateKey(dateKey) {
+      return dateKey is string && dateKey.size() == 10 && dateKey.matches('^\\d{4}-\\d{2}-\\d{2}$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isVerifiedOwner(userId) {
+      return isVerified() && request.auth.uid == userId;
+    }
+
+    function isBoundedStringArray(arr, maxLen, maxItemLen) {
+      return arr is list && arr.size() <= maxLen && (arr.size() == 0 || (arr[0] is string && arr[0].size() <= maxItemLen));
+    }
+
+    function isValidIntRange(val, minVal, maxVal) {
+      return val is int && val >= minVal && val <= maxVal;
+    }
+
+    function isValidNumberRange(val, minVal, maxVal) {
+      return (val is int || val is float) && val >= minVal && val <= maxVal;
+    }
+
+    // Validation Blueprint: UserProfile (/users/{userId})
+    function isValidUserProfile(data, userId) {
+      return data.keys().hasAll([
+        'uid', 'username', 'displayName', 'avatarId', 'experienceLevel',
+        'onboardingCompleted', 'totalXp', 'dailyXp', 'weeklyXp',
+        'lastDailyKey', 'lastWeeklyKey', 'coins', 'currentStreak',
+        'longestStreak', 'lastActivityDate', 'completedLessons',
+        'completedExercises', 'passedAssessments', 'completedMissions',
+        'unlockedAchievements', 'claimedDailyGoals', 'activityDates',
+        'graphicsQuality', 'soundMuted', 'theme', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid', 'username', 'displayName', 'avatarId', 'experienceLevel',
+        'onboardingCompleted', 'totalXp', 'dailyXp', 'weeklyXp',
+        'lastDailyKey', 'lastWeeklyKey', 'coins', 'currentStreak',
+        'longestStreak', 'lastActivityDate', 'completedLessons',
+        'completedExercises', 'passedAssessments', 'completedMissions',
+        'unlockedAchievements', 'claimedDailyGoals', 'activityDates',
+        'graphicsQuality', 'soundMuted', 'theme', 'createdAt', 'updatedAt'
+      ]) &&
+      data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.uid == request.auth.uid && data.uid == userId &&
+      data.username is string && data.username.size() >= 2 && data.username.size() <= 24 && data.username.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 40 &&
+      data.avatarId is string && data.avatarId.size() >= 1 && data.avatarId.size() <= 24 && data.avatarId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.experienceLevel is string && data.experienceLevel.size() <= 24 && data.experienceLevel in ['beginner', 'some_java', 'some_programming'] &&
+      data.onboardingCompleted is bool &&
+      isValidIntRange(data.totalXp, 0, 1000000) &&
+      isValidIntRange(data.dailyXp, 0, 100000) &&
+      isValidIntRange(data.weeklyXp, 0, 500000) &&
+      data.lastDailyKey is string && data.lastDailyKey.size() <= 16 &&
+      data.lastWeeklyKey is string && data.lastWeeklyKey.size() <= 16 &&
+      isValidIntRange(data.coins, 0, 1000000) &&
+      isValidIntRange(data.currentStreak, 0, 10000) &&
+      isValidIntRange(data.longestStreak, 0, 10000) &&
+      data.lastActivityDate is string && data.lastActivityDate.size() <= 16 &&
+      isBoundedStringArray(data.completedLessons, 150, 64) &&
+      isBoundedStringArray(data.completedExercises, 250, 64) &&
+      isBoundedStringArray(data.passedAssessments, 150, 64) &&
+      isBoundedStringArray(data.completedMissions, 150, 64) &&
+      isBoundedStringArray(data.unlockedAchievements, 80, 64) &&
+      isBoundedStringArray(data.claimedDailyGoals, 60, 64) &&
+      isBoundedStringArray(data.activityDates, 90, 16) &&
+      data.graphicsQuality is string && data.graphicsQuality.size() <= 10 && data.graphicsQuality in ['high', 'low'] &&
+      data.soundMuted is bool &&
+      data.theme is string && data.theme.size() <= 10 && data.theme in ['dark', 'light'] &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    // Validation Blueprint: UserPrivateInfo (/users/{userId}/private/{docId})
+    function isValidUserPrivateInfo(data, userId) {
+      return data.keys().hasAll(['uid', 'email', 'createdAt', 'updatedAt']) &&
+      data.keys().hasOnly(['uid', 'email', 'createdAt', 'updatedAt']) &&
+      data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.uid == request.auth.uid && data.uid == userId &&
+      data.email is string && data.email.size() <= 254 &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    // Validation Blueprint: LeaderboardEntry (/leaderboard/{userId})
+    function isValidLeaderboardEntry(data, userId) {
+      return data.keys().hasAll([
+        'uid', 'username', 'displayName', 'avatarId', 'visibility',
+        'totalXp', 'dailyXp', 'weeklyXp', 'lastDailyKey', 'lastWeeklyKey',
+        'currentStreak', 'achievementsCount', 'lessonsCompletedCount',
+        'missionsCompletedCount', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid', 'username', 'displayName', 'avatarId', 'visibility',
+        'totalXp', 'dailyXp', 'weeklyXp', 'lastDailyKey', 'lastWeeklyKey',
+        'currentStreak', 'achievementsCount', 'lessonsCompletedCount',
+        'missionsCompletedCount', 'createdAt', 'updatedAt'
+      ]) &&
+      data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 && data.uid.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.uid == request.auth.uid && data.uid == userId &&
+      data.username is string && data.username.size() >= 2 && data.username.size() <= 24 && data.username.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 40 &&
+      data.avatarId is string && data.avatarId.size() >= 1 && data.avatarId.size() <= 24 && data.avatarId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.visibility is string && data.visibility.size() <= 16 && data.visibility == 'public' &&
+      isValidIntRange(data.totalXp, 0, 1000000) &&
+      isValidIntRange(data.dailyXp, 0, 100000) &&
+      isValidIntRange(data.weeklyXp, 0, 500000) &&
+      data.lastDailyKey is string && data.lastDailyKey.size() <= 16 &&
+      data.lastWeeklyKey is string && data.lastWeeklyKey.size() <= 16 &&
+      isValidIntRange(data.currentStreak, 0, 10000) &&
+      isValidIntRange(data.achievementsCount, 0, 80) &&
+      isValidIntRange(data.lessonsCompletedCount, 0, 150) &&
+      isValidIntRange(data.missionsCompletedCount, 0, 150) &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    // Validation Blueprint: MissionRecord (/users/{userId}/missionRecords/{worldId})
+    function isValidMissionRecord(data, userId, worldId) {
+      return data.keys().hasAll([
+        'userId', 'worldId', 'bestScore', 'bestTimeSeconds',
+        'xpEarned', 'completionsCount', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'userId', 'worldId', 'bestScore', 'bestTimeSeconds',
+        'xpEarned', 'completionsCount', 'createdAt', 'updatedAt'
+      ]) &&
+      data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 && data.userId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.userId == request.auth.uid && data.userId == userId &&
+      data.worldId is string && data.worldId.size() >= 1 && data.worldId.size() <= 32 && data.worldId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.worldId == worldId &&
+      isValidIntRange(data.bestScore, 0, 10000) &&
+      isValidIntRange(data.bestTimeSeconds, 1, 86400) &&
+      isValidIntRange(data.xpEarned, 0, 10000) &&
+      isValidIntRange(data.completionsCount, 1, 10000) &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    // Validation Blueprint: WorldState (/users/{userId}/worldState/{worldId})
+    function isValidStructureStagesMap(stages) {
+      return stages is map &&
+        stages.keys().hasAll([
+          'beacon', 'workshop', 'gatehouse', 'bridge', 'staircase',
+          'lantern_grove', 'map_station', 'repair_district',
+          'registration_centre', 'grand_settlement'
+        ]) &&
+        stages.keys().hasOnly([
+          'beacon', 'workshop', 'gatehouse', 'bridge', 'staircase',
+          'lantern_grove', 'map_station', 'repair_district',
+          'registration_centre', 'grand_settlement'
+        ]) &&
+        isValidIntRange(stages.beacon, 0, 4) &&
+        isValidIntRange(stages.workshop, 0, 4) &&
+        isValidIntRange(stages.gatehouse, 0, 4) &&
+        isValidIntRange(stages.bridge, 0, 4) &&
+        isValidIntRange(stages.staircase, 0, 4) &&
+        isValidIntRange(stages.lantern_grove, 0, 4) &&
+        isValidIntRange(stages.map_station, 0, 4) &&
+        isValidIntRange(stages.repair_district, 0, 4) &&
+        isValidIntRange(stages.registration_centre, 0, 4) &&
+        isValidIntRange(stages.grand_settlement, 0, 4);
+    }
+
+    function isMonotonicStructureStages(nextStages, prevStages) {
+      return nextStages.beacon >= prevStages.beacon &&
+        nextStages.workshop >= prevStages.workshop &&
+        nextStages.gatehouse >= prevStages.gatehouse &&
+        nextStages.bridge >= prevStages.bridge &&
+        nextStages.staircase >= prevStages.staircase &&
+        nextStages.lantern_grove >= prevStages.lantern_grove &&
+        nextStages.map_station >= prevStages.map_station &&
+        nextStages.repair_district >= prevStages.repair_district &&
+        nextStages.registration_centre >= prevStages.registration_centre &&
+        nextStages.grand_settlement >= prevStages.grand_settlement;
+    }
+
+    function isValidWorldState(data, userId, worldId) {
+      return data.keys().hasAll([
+        'userId', 'worldId', 'completedLevelKeys', 'completedTaskIds',
+        'purchasedSupplyIds', 'collectedSupplyIds',
+        'structureStages', 'playerX', 'playerY', 'playerZ',
+        'unlockedForestOutfit', 'equippedForestOutfit',
+        'unlockedCompanionAccessory', 'equippedCompanionAccessory',
+        'registeredVillagerName', 'registeredCrystalCount',
+        'cinematicTourCompleted', 'freeRoamUnlocked',
+        'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'userId', 'worldId', 'completedLevelKeys', 'completedTaskIds',
+        'purchasedSupplyIds', 'collectedSupplyIds',
+        'structureStages', 'playerX', 'playerY', 'playerZ',
+        'unlockedForestOutfit', 'equippedForestOutfit',
+        'unlockedCompanionAccessory', 'equippedCompanionAccessory',
+        'registeredVillagerName', 'registeredCrystalCount',
+        'cinematicTourCompleted', 'freeRoamUnlocked',
+        'createdAt', 'updatedAt'
+      ]) &&
+      data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 && data.userId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.userId == request.auth.uid && data.userId == userId &&
+      data.worldId is string && data.worldId.size() >= 1 && data.worldId.size() <= 32 && data.worldId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.worldId == worldId && data.worldId == 'world-1' &&
+      isBoundedStringArray(data.completedLevelKeys, 12, 16) &&
+      isBoundedStringArray(data.completedTaskIds, 50, 32) &&
+      isBoundedStringArray(data.purchasedSupplyIds, 20, 32) &&
+      isBoundedStringArray(data.collectedSupplyIds, 20, 32) &&
+      isValidStructureStagesMap(data.structureStages) &&
+      isValidNumberRange(data.playerX, -200, 200) &&
+      isValidNumberRange(data.playerY, -20, 100) &&
+      isValidNumberRange(data.playerZ, -200, 200) &&
+      data.unlockedForestOutfit is bool &&
+      data.equippedForestOutfit is bool &&
+      data.unlockedCompanionAccessory is bool &&
+      data.equippedCompanionAccessory is bool &&
+      data.registeredVillagerName is string && data.registeredVillagerName.size() >= 1 && data.registeredVillagerName.size() <= 32 &&
+      isValidIntRange(data.registeredCrystalCount, 0, 100000) &&
+      data.cinematicTourCompleted is bool &&
+      data.freeRoamUnlocked is bool &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    // Validation Blueprint: ActivityLog (/users/{userId}/activityLogs/{logId})
+    function isValidActivityLog(data, userId) {
+      return data.keys().hasAll([
+        'userId', 'activityId', 'activityType', 'title',
+        'xpAmount', 'coinsAmount', 'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'userId', 'activityId', 'activityType', 'title',
+        'xpAmount', 'coinsAmount', 'createdAt'
+      ]) &&
+      data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 && data.userId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.userId == request.auth.uid && data.userId == userId &&
+      data.activityId is string && data.activityId.size() >= 1 && data.activityId.size() <= 64 && data.activityId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.activityType is string && data.activityType.size() <= 24 && data.activityType in [
+        'daily_login', 'lesson', 'exercise', 'assessment', 'mission', 'multiplayer_match', 'daily_goal', 'streak_milestone'
+      ] &&
+      data.title is string && data.title.size() >= 1 && data.title.size() <= 120 &&
+      isValidIntRange(data.xpAmount, 0, 5000) &&
+      isValidIntRange(data.coinsAmount, 0, 5000) &&
+      data.createdAt is timestamp;
+    }
+
+    // Validation Blueprint: UserStreak (/userStreaks/{userId})
+    function isValidUserStreak(data, userId) {
+      return data.keys().hasAll([
+        'userId', 'currentStreak', 'longestStreak',
+        'lastActivityDate', 'totalActiveDays', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'userId', 'currentStreak', 'longestStreak',
+        'lastActivityDate', 'totalActiveDays', 'createdAt', 'updatedAt'
+      ]) &&
+      data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 && data.userId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.userId == request.auth.uid && data.userId == userId &&
+      isValidIntRange(data.currentStreak, 1, 10000) &&
+      isValidIntRange(data.longestStreak, 1, 10000) &&
+      data.lastActivityDate is string && data.lastActivityDate.size() == 10 && data.lastActivityDate.matches('^\\d{4}-\\d{2}-\\d{2}$') &&
+      isValidIntRange(data.totalActiveDays, 1, 10000) &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    // Validation Blueprint: StreakActivity (/userStreaks/{userId}/activities/{dateKey})
+    function isValidStreakActivity(data, userId, dateKey) {
+      return data.keys().hasAll(['userId', 'activityDate', 'activityType', 'createdAt']) &&
+      data.keys().hasOnly(['userId', 'activityDate', 'activityType', 'createdAt']) &&
+      data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 && data.userId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.userId == request.auth.uid && data.userId == userId &&
+      data.activityDate is string && data.activityDate.size() == 10 && data.activityDate.matches('^\\d{4}-\\d{2}-\\d{2}$') &&
+      data.activityDate == dateKey &&
+      data.activityType is string && data.activityType.size() <= 24 && data.activityType in [
+        'daily_login', 'lesson', 'exercise', 'assessment', 'mission', 'multiplayer_match'
+      ] &&
+      data.createdAt is timestamp;
+    }
+
+    // Validation Blueprint: GameRoom (/gameRooms/{roomId})
+    function isValidGameRoom(data) {
+      return data.keys().hasAll([
+        'roomCode', 'roomName', 'hostUserId', 'maxPlayers',
+        'gameMode', 'selectedLevel', 'javaDifficulty',
+        'allowFriendsToInvite', 'roomStatus', 'createdAt', 'expiresAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'roomCode', 'roomName', 'hostUserId', 'maxPlayers',
+        'gameMode', 'selectedLevel', 'javaDifficulty',
+        'allowFriendsToInvite', 'roomStatus', 'createdAt', 'expiresAt', 'updatedAt'
+      ]) &&
+      data.roomCode is string && data.roomCode.size() >= 6 && data.roomCode.size() <= 8 && data.roomCode.matches('^[A-Z2-9]+$') &&
+      data.roomName is string && data.roomName.size() >= 1 && data.roomName.size() <= 42 &&
+      data.hostUserId is string && data.hostUserId.size() >= 1 && data.hostUserId.size() <= 128 && data.hostUserId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      isValidIntRange(data.maxPlayers, 2, 6) &&
+      data.gameMode is string && data.gameMode.size() <= 24 && data.gameMode in ['coding_race', 'coop_adventure', 'challenge_mode'] &&
+      isValidIntRange(data.selectedLevel, 1, 100) &&
+      data.javaDifficulty is string && data.javaDifficulty.size() <= 16 && data.javaDifficulty in ['Beginner', 'Intermediate', 'Advanced'] &&
+      data.allowFriendsToInvite is bool &&
+      data.roomStatus is string && data.roomStatus.size() <= 16 && data.roomStatus in [
+        'waiting', 'starting', 'in_progress', 'completed', 'cancelled', 'expired'
+      ] &&
+      data.createdAt is timestamp &&
+      data.expiresAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    // Validation Blueprint: RoomMember (/gameRooms/{roomId}/members/{memberUid})
+    function isValidRoomMember(data, roomId, memberUid) {
+      return data.keys().hasAll([
+        'roomId', 'userId', 'username', 'avatarId',
+        'isHost', 'isReady', 'joinedAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'roomId', 'userId', 'username', 'avatarId',
+        'isHost', 'isReady', 'joinedAt', 'updatedAt'
+      ]) &&
+      data.roomId is string && data.roomId.size() >= 1 && data.roomId.size() <= 128 && data.roomId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.roomId == roomId &&
+      data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 && data.userId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.userId == memberUid &&
+      data.username is string && data.username.size() >= 2 && data.username.size() <= 24 && data.username.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.avatarId is string && data.avatarId.size() >= 1 && data.avatarId.size() <= 24 && data.avatarId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.isHost is bool &&
+      data.isReady is bool &&
+      data.joinedAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    // Validation Blueprint: RoomInvitation (/roomInvitations/{inviteId})
+    function isValidRoomInvitation(data) {
+      return data.keys().hasAll([
+        'roomId', 'roomCode', 'senderUserId', 'recipientUserId',
+        'invitationStatus', 'createdAt', 'expiresAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'roomId', 'roomCode', 'senderUserId', 'recipientUserId',
+        'invitationStatus', 'createdAt', 'expiresAt', 'updatedAt'
+      ]) &&
+      data.roomId is string && data.roomId.size() >= 1 && data.roomId.size() <= 128 && data.roomId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.roomCode is string && data.roomCode.size() >= 6 && data.roomCode.size() <= 8 && data.roomCode.matches('^[A-Z2-9]+$') &&
+      data.senderUserId is string && data.senderUserId.size() >= 1 && data.senderUserId.size() <= 128 && data.senderUserId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.recipientUserId is string && data.recipientUserId.size() >= 1 && data.recipientUserId.size() <= 128 && data.recipientUserId.matches('^[a-zA-Z0-9_\\-]+$') &&
+      data.senderUserId != data.recipientUserId &&
+      data.invitationStatus is string && data.invitationStatus.size() <= 16 && data.invitationStatus in ['pending', 'accepted', 'declined', 'expired'] &&
+      data.createdAt is timestamp &&
+      data.expiresAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    // Collection 1: /users/{userId}
+    match /users/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      allow list: if false;
+
+      allow create: if isVerifiedOwner(userId) &&
+        isValidId(userId) &&
+        isValidUserProfile(incoming(), userId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        existsAfter(/databases/$(database)/documents/leaderboard/$(userId));
+
+      allow update: if isVerifiedOwner(userId) &&
+        isValidId(userId) &&
+        isValidUserProfile(incoming(), userId) &&
+        incoming().uid == existing().uid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time && (
+          // Action 1: Update Onboarding or Profile Customization
+          (
+            incoming().diff(existing()).affectedKeys().hasOnly([
+              'username', 'displayName', 'avatarId', 'experienceLevel',
+              'onboardingCompleted', 'updatedAt'
+            ]) &&
+            existsAfter(/databases/$(database)/documents/leaderboard/$(userId))
+          ) ||
+          // Action 2: Update Settings Preferences
+          (
+            incoming().diff(existing()).affectedKeys().hasOnly([
+              'graphicsQuality', 'soundMuted', 'theme', 'updatedAt'
+            ])
+          ) ||
+          // Action 3: Record Learning & Adventure Progress
+          (
+            incoming().totalXp >= existing().totalXp &&
+            incoming().longestStreak >= existing().longestStreak &&
+            incoming().diff(existing()).affectedKeys().hasOnly([
+              'totalXp', 'dailyXp', 'weeklyXp', 'lastDailyKey', 'lastWeeklyKey',
+              'coins', 'currentStreak', 'longestStreak', 'lastActivityDate',
+              'completedLessons', 'completedExercises', 'passedAssessments',
+              'completedMissions', 'unlockedAchievements', 'claimedDailyGoals',
+              'activityDates', 'updatedAt'
+            ]) &&
+            getAfter(/databases/$(database)/documents/leaderboard/$(userId)).data.totalXp == incoming().totalXp
+          )
+        );
+
+      allow delete: if false;
+
+      // Subcollection 1A: Isolated PII (/users/{userId}/private/{docId})
+      match /private/{docId} {
+        allow get: if isOwner(userId) &&
+          isValidId(userId) &&
+          docId == 'info' &&
+          get(/databases/$(database)/documents/users/$(userId)).data.uid == request.auth.uid;
+        allow list: if false;
+
+        allow create: if isVerifiedOwner(userId) &&
+          isValidId(userId) &&
+          docId == 'info' &&
+          isValidUserPrivateInfo(incoming(), userId) &&
+          incoming().createdAt == request.time &&
+          incoming().updatedAt == request.time &&
+          getAfter(/databases/$(database)/documents/users/$(userId)).data.uid == request.auth.uid;
+
+        allow update: if isVerifiedOwner(userId) &&
+          isValidId(userId) &&
+          docId == 'info' &&
+          isValidUserPrivateInfo(incoming(), userId) &&
+          incoming().uid == existing().uid &&
+          incoming().createdAt == existing().createdAt &&
+          incoming().updatedAt == request.time &&
+          incoming().diff(existing()).affectedKeys().hasOnly(['email', 'updatedAt']) &&
+          getAfter(/databases/$(database)/documents/users/$(userId)).data.uid == request.auth.uid;
+
+        allow delete: if false;
+      }
+
+      // Subcollection 1B: Adventure Mission Records (/users/{userId}/missionRecords/{worldId})
+      match /missionRecords/{worldId} {
+        allow get: if isOwner(userId) &&
+          isValidId(userId) &&
+          isValidId(worldId) &&
+          get(/databases/$(database)/documents/users/$(userId)).data.uid == request.auth.uid;
+
+        allow list: if isOwner(userId) &&
+          existing().userId == request.auth.uid;
+
+        allow create: if isVerifiedOwner(userId) &&
+          isValidId(userId) &&
+          isValidId(worldId) &&
+          isValidMissionRecord(incoming(), userId, worldId) &&
+          incoming().createdAt == request.time &&
+          incoming().updatedAt == request.time &&
+          getAfter(/databases/$(database)/documents/users/$(userId)).data.uid == request.auth.uid;
+
+        allow update: if isVerifiedOwner(userId) &&
+          isValidId(userId) &&
+          isValidId(worldId) &&
+          isValidMissionRecord(incoming(), userId, worldId) &&
+          incoming().userId == existing().userId &&
+          incoming().worldId == existing().worldId &&
+          incoming().createdAt == existing().createdAt &&
+          incoming().updatedAt == request.time &&
+          incoming().completionsCount >= existing().completionsCount &&
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'bestScore', 'bestTimeSeconds', 'xpEarned', 'completionsCount', 'updatedAt'
+          ]) &&
+          getAfter(/databases/$(database)/documents/users/$(userId)).data.uid == request.auth.uid;
+
+        allow delete: if false;
+      }
+
+      // Subcollection 1C: Persistent 3D World State (/users/{userId}/worldState/{worldId})
+      match /worldState/{worldId} {
+        allow get: if isOwner(userId) &&
+          isValidId(userId) &&
+          isValidId(worldId) &&
+          get(/databases/$(database)/documents/users/$(userId)).data.uid == request.auth.uid;
+
+        allow list: if false;
+
+        allow create: if isVerifiedOwner(userId) &&
+          isValidId(userId) &&
+          isValidId(worldId) &&
+          isValidWorldState(incoming(), userId, worldId) &&
+          incoming().createdAt == request.time &&
+          incoming().updatedAt == request.time &&
+          getAfter(/databases/$(database)/documents/users/$(userId)).data.uid == request.auth.uid;
+
+        allow update: if isVerifiedOwner(userId) &&
+          isValidId(userId) &&
+          isValidId(worldId) &&
+          isValidWorldState(incoming(), userId, worldId) &&
+          incoming().userId == existing().userId &&
+          incoming().worldId == existing().worldId &&
+          incoming().createdAt == existing().createdAt &&
+          incoming().updatedAt == request.time &&
+          isMonotonicStructureStages(incoming().structureStages, existing().structureStages) && (
+            // Action 1: Save construction progress, supply pickups, unlocked rewards, or NPC registration
+            incoming().diff(existing()).affectedKeys().hasOnly([
+              'completedLevelKeys', 'completedTaskIds',
+              'purchasedSupplyIds', 'collectedSupplyIds',
+              'structureStages',
+              'playerX', 'playerY', 'playerZ',
+              'unlockedForestOutfit', 'equippedForestOutfit',
+              'unlockedCompanionAccessory', 'equippedCompanionAccessory',
+              'registeredVillagerName', 'registeredCrystalCount',
+              'cinematicTourCompleted', 'freeRoamUnlocked', 'updatedAt'
+            ]) ||
+            // Action 2: Save 3D player position checkpoint
+            incoming().diff(existing()).affectedKeys().hasOnly([
+              'playerX', 'playerY', 'playerZ', 'updatedAt'
+            ]) ||
+            // Action 3: Toggle equipped cosmetics
+            incoming().diff(existing()).affectedKeys().hasOnly([
+              'equippedForestOutfit', 'equippedCompanionAccessory', 'updatedAt'
+            ])
+          ) &&
+          getAfter(/databases/$(database)/documents/users/$(userId)).data.uid == request.auth.uid;
+
+        allow delete: if false;
+      }
+
+      // Subcollection 1D: Immutable XP & Activity Logs (/users/{userId}/activityLogs/{logId})
+      match /activityLogs/{logId} {
+        allow get: if isOwner(userId) &&
+          isValidId(userId) &&
+          isValidId(logId) &&
+          get(/databases/$(database)/documents/users/$(userId)).data.uid == request.auth.uid;
+
+        allow list: if isOwner(userId) &&
+          existing().userId == request.auth.uid;
+
+        allow create: if isVerifiedOwner(userId) &&
+          isValidId(userId) &&
+          isValidId(logId) &&
+          isValidActivityLog(incoming(), userId) &&
+          incoming().createdAt == request.time &&
+          getAfter(/databases/$(database)/documents/users/$(userId)).data.uid == request.auth.uid;
+
+        allow update, delete: if false;
+      }
+    }
+
+    // Collection 2: Public Multi-User Leaderboard (/leaderboard/{userId})
+    match /leaderboard/{userId} {
+      allow get: if isSignedIn() &&
+        isValidId(userId) &&
+        existing().visibility == 'public';
+
+      allow list: if isSignedIn() &&
+        existing().visibility == 'public';
+
+      allow create: if isVerifiedOwner(userId) &&
+        isValidId(userId) &&
+        isValidLeaderboardEntry(incoming(), userId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        getAfter(/databases/$(database)/documents/users/$(userId)).data.totalXp == incoming().totalXp;
+
+      allow update: if isVerifiedOwner(userId) &&
+        isValidId(userId) &&
+        isValidLeaderboardEntry(incoming(), userId) &&
+        incoming().uid == existing().uid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time && (
+          // Action 1: Profile metadata sync
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'username', 'displayName', 'avatarId', 'updatedAt'
+          ]) ||
+          // Action 2: XP & progress sync
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'totalXp', 'dailyXp', 'weeklyXp', 'lastDailyKey', 'lastWeeklyKey',
+            'currentStreak', 'achievementsCount', 'lessonsCompletedCount',
+            'missionsCompletedCount', 'updatedAt'
+          ]) ||
+          // Action 3: Combined profile + progress sync
+          incoming().diff(existing()).affectedKeys().hasOnly([
+            'username', 'displayName', 'avatarId', 'totalXp', 'dailyXp',
+            'weeklyXp', 'lastDailyKey', 'lastWeeklyKey', 'currentStreak',
+            'achievementsCount', 'lessonsCompletedCount', 'missionsCompletedCount',
+            'updatedAt'
+          ])
+        ) &&
+        getAfter(/databases/$(database)/documents/users/$(userId)).data.totalXp == incoming().totalXp;
+
+      allow delete: if false;
+    }
+
+    // Collection 3: Normalized Daily Streaks (/userStreaks/{userId})
+    match /userStreaks/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      allow list: if false;
+
+      allow create: if isVerifiedOwner(userId) &&
+        isValidId(userId) &&
+        isValidUserStreak(incoming(), userId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        existsAfter(/databases/$(database)/documents/userStreaks/$(userId)/activities/$(incoming().lastActivityDate));
+
+      allow update: if isVerifiedOwner(userId) &&
+        isValidId(userId) &&
+        isValidUserStreak(incoming(), userId) &&
+        incoming().userId == existing().userId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().longestStreak >= existing().longestStreak &&
+        incoming().totalActiveDays >= existing().totalActiveDays &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'currentStreak', 'longestStreak', 'lastActivityDate', 'totalActiveDays', 'updatedAt'
+        ]) &&
+        existsAfter(/databases/$(database)/documents/userStreaks/$(userId)/activities/$(incoming().lastActivityDate));
+
+      allow delete: if false;
+
+      // Subcollection 3A: Unique Daily Streak Activity (/userStreaks/{userId}/activities/{dateKey})
+      match /activities/{dateKey} {
+        allow get: if isOwner(userId) &&
+          isValidId(userId) &&
+          isValidDateKey(dateKey) &&
+          get(/databases/$(database)/documents/userStreaks/$(userId)).data.userId == request.auth.uid;
+
+        allow list: if isOwner(userId) &&
+          existing().userId == request.auth.uid;
+
+        allow create: if isVerifiedOwner(userId) &&
+          isValidId(userId) &&
+          isValidDateKey(dateKey) &&
+          isValidStreakActivity(incoming(), userId, dateKey) &&
+          incoming().createdAt == request.time &&
+          getAfter(/databases/$(database)/documents/userStreaks/$(userId)).data.userId == request.auth.uid;
+
+        allow update, delete: if false;
+      }
+    }
+
+    // Collection 4: Private Multiplayer Rooms (/gameRooms/{roomId})
+    match /gameRooms/{roomId} {
+      // Room preview readable by signed-in players looking up a room or room members
+      allow get: if isSignedIn() &&
+        isValidId(roomId) && (
+          existing().hostUserId == request.auth.uid ||
+          existing().roomStatus == 'waiting' ||
+          exists(/databases/$(database)/documents/gameRooms/$(roomId)/members/$(request.auth.uid))
+        );
+
+      // List restricted to rooms hosted by the authenticated user (code lookup uses roomCode query by host or direct ID)
+      allow list: if isSignedIn() &&
+        existing().hostUserId == request.auth.uid;
+
+      allow create: if isVerified() &&
+        isValidId(roomId) &&
+        isValidGameRoom(incoming()) &&
+        incoming().hostUserId == request.auth.uid &&
+        incoming().roomStatus == 'waiting' &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        existsAfter(/databases/$(database)/documents/gameRooms/$(roomId)/members/$(request.auth.uid));
+
+      allow update: if isVerified() &&
+        isValidId(roomId) &&
+        isValidGameRoom(incoming()) &&
+        !(existing().roomStatus in ['completed', 'cancelled', 'expired']) &&
+        incoming().roomCode == existing().roomCode &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        existing().hostUserId == request.auth.uid && (
+          // Action 1: Host updates lobby settings while waiting
+          (
+            existing().roomStatus == 'waiting' &&
+            incoming().hostUserId == existing().hostUserId &&
+            incoming().roomStatus == 'waiting' &&
+            incoming().diff(existing()).affectedKeys().hasOnly([
+              'roomName', 'maxPlayers', 'gameMode', 'selectedLevel',
+              'javaDifficulty', 'allowFriendsToInvite', 'expiresAt', 'updatedAt'
+            ])
+          ) ||
+          // Action 2: Host transitions room lifecycle status
+          (
+            incoming().hostUserId == existing().hostUserId &&
+            incoming().diff(existing()).affectedKeys().hasOnly([
+              'roomStatus', 'expiresAt', 'updatedAt'
+            ])
+          ) ||
+          // Action 3: Host transfers host authority to an existing room member
+          (
+            incoming().diff(existing()).affectedKeys().hasOnly([
+              'hostUserId', 'updatedAt'
+            ]) &&
+            exists(/databases/$(database)/documents/gameRooms/$(roomId)/members/$(incoming().hostUserId))
+          )
+        );
+
+      allow delete: if false;
+
+      // Subcollection 4A: Unique Room Members (/gameRooms/{roomId}/members/{memberUid})
+      match /members/{memberUid} {
+        allow get: if isSignedIn() &&
+          isValidId(roomId) &&
+          isValidId(memberUid) && (
+            request.auth.uid == memberUid ||
+            get(/databases/$(database)/documents/gameRooms/$(roomId)).data.hostUserId == request.auth.uid ||
+            exists(/databases/$(database)/documents/gameRooms/$(roomId)/members/$(request.auth.uid))
+          );
+
+        allow list: if isSignedIn() &&
+          existing().userId == request.auth.uid;
+
+        allow create: if isVerifiedOwner(memberUid) &&
+          isValidId(roomId) &&
+          isValidId(memberUid) &&
+          isValidRoomMember(incoming(), roomId, memberUid) &&
+          incoming().joinedAt == request.time &&
+          incoming().updatedAt == request.time &&
+          getAfter(/databases/$(database)/documents/gameRooms/$(roomId)).data.roomStatus == 'waiting' &&
+          (
+            (incoming().isHost == true && getAfter(/databases/$(database)/documents/gameRooms/$(roomId)).data.hostUserId == request.auth.uid) ||
+            (incoming().isHost == false && getAfter(/databases/$(database)/documents/gameRooms/$(roomId)).data.hostUserId != request.auth.uid)
+          );
+
+        allow update: if isVerified() &&
+          isValidId(roomId) &&
+          isValidId(memberUid) &&
+          isValidRoomMember(incoming(), roomId, memberUid) &&
+          incoming().roomId == existing().roomId &&
+          incoming().userId == existing().userId &&
+          incoming().joinedAt == existing().joinedAt &&
+          incoming().updatedAt == request.time && (
+            // Action 1: Member toggles own ready state
+            (
+              request.auth.uid == memberUid &&
+              incoming().isHost == existing().isHost &&
+              incoming().diff(existing()).affectedKeys().hasOnly(['isReady', 'username', 'avatarId', 'updatedAt']) &&
+              get(/databases/$(database)/documents/gameRooms/$(roomId)).data.roomStatus == 'waiting'
+            ) ||
+            // Action 2: Host promotes member to host during host transfer
+            (
+              get(/databases/$(database)/documents/gameRooms/$(roomId)).data.hostUserId == request.auth.uid &&
+              incoming().diff(existing()).affectedKeys().hasOnly(['isHost', 'isReady', 'updatedAt'])
+            )
+          );
+
+        allow delete: if isVerified() &&
+          isValidId(roomId) &&
+          isValidId(memberUid) && (
+            request.auth.uid == memberUid ||
+            get(/databases/$(database)/documents/gameRooms/$(roomId)).data.hostUserId == request.auth.uid
+          );
+      }
+    }
+
+    // Collection 5: Direct Friend Room Invitations (/roomInvitations/{inviteId})
+    match /roomInvitations/{inviteId} {
+      allow get: if isSignedIn() &&
+        isValidId(inviteId) && (
+          existing().senderUserId == request.auth.uid ||
+          existing().recipientUserId == request.auth.uid
+        );
+
+      allow list: if isSignedIn() && (
+        existing().recipientUserId == request.auth.uid ||
+        existing().senderUserId == request.auth.uid
+      );
+
+      allow create: if isVerified() &&
+        isValidId(inviteId) &&
+        isValidRoomInvitation(incoming()) &&
+        incoming().senderUserId == request.auth.uid &&
+        incoming().invitationStatus == 'pending' &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        exists(/databases/$(database)/documents/gameRooms/$(incoming().roomId)/members/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/gameRooms/$(incoming().roomId)).data.roomStatus == 'waiting' && (
+          get(/databases/$(database)/documents/gameRooms/$(incoming().roomId)).data.hostUserId == request.auth.uid ||
+          get(/databases/$(database)/documents/gameRooms/$(incoming().roomId)).data.allowFriendsToInvite == true
+        );
+
+      allow update: if isVerified() &&
+        isValidId(inviteId) &&
+        isValidRoomInvitation(incoming()) &&
+        existing().invitationStatus == 'pending' &&
+        incoming().roomId == existing().roomId &&
+        incoming().roomCode == existing().roomCode &&
+        incoming().senderUserId == existing().senderUserId &&
+        incoming().recipientUserId == existing().recipientUserId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().expiresAt == existing().expiresAt &&
+        incoming().updatedAt == request.time && (
+          // Action 1: Recipient accepts or declines pending invitation
+          (
+            request.auth.uid == existing().recipientUserId &&
+            incoming().invitationStatus in ['accepted', 'declined'] &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['invitationStatus', 'updatedAt'])
+          ) ||
+          // Action 2: Sender expires pending invitation
+          (
+            request.auth.uid == existing().senderUserId &&
+            incoming().invitationStatus == 'expired' &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['invitationStatus', 'updatedAt'])
+          )
+        );
+
+      allow delete: if false;
+    }
+  }
+}

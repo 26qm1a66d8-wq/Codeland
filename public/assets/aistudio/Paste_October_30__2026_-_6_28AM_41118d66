@@ -1,0 +1,1284 @@
+# MASTER DEVELOPMENT PROMPT — CODELAND
+## A Professional 3D Minecraft-Inspired Java Learning and Adventure Platform
+
+Act as a senior full-stack developer, 3D game developer, UI/UX designer, educational technology specialist, and game systems architect.
+
+Build a complete, professional, interactive web application called **CODELAND**.
+
+CODELAND is a gamified Java programming education platform. It combines structured Java lessons, interactive coding practice, story-driven gameplay, 3D voxel environments inspired by Minecraft, achievements, daily streaks, and leaderboards.
+
+This must be a functional application, not just a landing page, static mockup, or visual prototype.
+
+The application should look and feel like a polished commercial educational game.
+
+---
+
+# 1. CORE PRODUCT VISION
+
+The main idea is to help beginners learn Java programming before entering an adventure game where they apply their knowledge.
+
+The user journey must follow this sequence:
+
+1. User registers or logs in.
+2. User enters the CODELAND dashboard.
+3. User opens the Java Learning Academy.
+4. User learns Java concepts through interactive lessons.
+5. User completes examples, exercises, and short assessments.
+6. User unlocks the corresponding adventure level.
+7. User enters a 3D Minecraft-inspired world.
+8. User solves obstacles using the Java concepts they learned.
+9. User earns XP, coins, badges, and achievements.
+10. User maintains daily learning streaks and competes on leaderboards.
+
+The key philosophy:
+
+"Learn Java. Master the Code. Explore the World."
+
+The platform must teach Java progressively. A complete beginner should be able to start without any previous programming knowledge.
+
+IMPORTANT: The application must initially support ONLY Java. Do not add Python, C++, JavaScript learning courses, or other programming language sections.
+
+---
+
+# 2. VISUAL IDENTITY AND DESIGN DIRECTION
+
+The design must combine:
+
+- Minecraft-inspired voxel environments.
+- Professional modern SaaS dashboard design.
+- Colorful educational game aesthetics.
+- Immersive 3D environments.
+- Clean typography and intuitive navigation.
+- Polished animations and transitions.
+
+Do not make the website look like an ordinary school learning management system.
+
+Do not make it look like a basic coding tutorial website.
+
+It should feel like an adventure game combined with a premium programming education platform.
+
+## Visual style
+
+Use a Minecraft-inspired voxel aesthetic:
+
+- Block-based terrain.
+- Cubic trees.
+- Grass blocks.
+- Mountains and caves.
+- Stone pathways.
+- Wooden structures.
+- Floating islands.
+- Crystal formations.
+- Medieval-style buildings.
+- Animated characters and creatures.
+- Block-based obstacles.
+- Glowing portals and treasure chests.
+
+Use original voxel-style assets. The design can be inspired by Minecraft's block-based aesthetic, but do not copy Minecraft's logos, characters, textures, or proprietary assets.
+
+## Color palette
+
+Use a balanced professional palette:
+
+- Forest green: #2F7D46
+- Deep green: #173B2B
+- Sky blue: #69B9E7
+- Warm cream: #F5F1E6
+- Dark charcoal: #202923
+- Golden yellow: #F5C451
+- Accent orange: #F28C45
+
+Use gradients carefully.
+
+The interface should have strong visual hierarchy, readable text, rounded cards, subtle shadows, and consistent spacing.
+
+## Typography
+
+Use a modern readable font such as Inter, Nunito, or similar.
+
+Use a pixel-inspired display font only for selected game titles, badges, and world headings. Keep lesson text and coding interfaces professional and easy to read.
+
+## Animations
+
+Include:
+
+- Smooth page transitions.
+- Hover animations.
+- Animated buttons.
+- Character idle animations.
+- Portal opening animations.
+- Reward animations.
+- XP progress animations.
+- Level completion celebrations.
+- Subtle environmental animations.
+
+Animations must not interfere with usability.
+
+---
+
+# 3. APPLICATION STRUCTURE
+
+Create the following main sections:
+
+1. Welcome / Landing Page
+2. Authentication
+3. Player Onboarding
+4. Main Dashboard
+5. Java Learning Academy
+6. Lesson Detail Page
+7. Java Practice Arena
+8. Level Selection
+9. 3D Adventure Game
+10. Achievements and Rewards
+11. Daily Streak System
+12. Leaderboard
+13. Player Profile
+14. Settings
+
+Create a consistent navigation system.
+
+The desktop layout should have a professional sidebar with:
+
+- Dashboard
+- Java Academy
+- Adventure Worlds
+- Practice Arena
+- Leaderboard
+- Achievements
+- Profile
+
+The mobile version should use a responsive navigation layout.
+
+---
+
+# 4. LANDING PAGE
+
+Create a visually impressive landing page.
+
+The hero section should contain:
+
+Main heading:
+
+"Your Java Adventure Starts Here."
+
+Subheading:
+
+"Learn Java from scratch, master programming concepts, and explore immersive worlds powered by your code."
+
+Primary CTA: "Start Your Adventure"
+
+Secondary CTA: "Explore Worlds"
+
+The hero should feature a beautiful animated voxel environment with:
+
+- A small player character.
+- A forest landscape.
+- Floating code symbols.
+- Glowing blocks.
+- A portal.
+- A few floating Java code snippets.
+
+Include these sections:
+
+### How CODELAND Works
+
+Step 1: Learn Java.
+
+Step 2: Practise coding.
+
+Step 3: Enter the adventure.
+
+Step 4: Complete missions.
+
+Step 5: Earn rewards and climb the leaderboard.
+
+### Why CODELAND?
+
+- Beginner-friendly Java lessons.
+- Interactive programming practice.
+- Story-driven 3D adventures.
+- Daily learning streaks.
+- Achievements and rankings.
+
+### Explore the Worlds
+
+Show six visually distinct world cards.
+
+### Final CTA
+
+"Ready to turn your code into an adventure?"
+
+Button: "Enter CODELAND"
+
+---
+
+# 5. AUTHENTICATION AND PLAYER ONBOARDING
+
+Implement working registration and login.
+
+For the initial version, use a reliable authentication solution or a clearly labelled demo account system.
+
+Do not pretend that authentication is secure if it is only stored in browser local storage.
+
+Onboarding should ask:
+
+- Player username.
+- Display name.
+- Experience level: Complete Beginner / Know a Little Java / Already Know Some Programming.
+- Optional avatar selection.
+
+Give the player a default voxel-style avatar.
+
+After onboarding, show a short welcome animation and take the player to the dashboard.
+
+---
+
+# 6. MAIN DASHBOARD
+
+The dashboard should feel like a player's personal adventure hub.
+
+Include:
+
+### Welcome panel
+
+"Welcome back, [Player Name]!"
+
+Display the player's avatar and current rank.
+
+### Player statistics
+
+Display:
+
+- Total XP.
+- Current level.
+- Current streak.
+- Longest streak.
+- Lessons completed.
+- Adventure missions completed.
+- Total coins.
+- Current leaderboard position.
+
+### Continue learning
+
+Show the next incomplete Java lesson.
+
+Include a clear "Continue Learning" button.
+
+### Adventure progress
+
+Show the six worlds as a progression map.
+
+Locked worlds should have a lock icon.
+
+Unlocked worlds should have an obvious visual distinction.
+
+### Daily goals
+
+Examples:
+
+- Complete one Java lesson.
+- Solve three coding exercises.
+- Complete one adventure mission.
+
+Display a progress bar for each goal.
+
+### Daily streak
+
+Show the current streak with a flame icon.
+
+Display a calendar of the last seven days.
+
+### Leaderboard preview
+
+Show the top five players and the current player's position.
+
+### Recent achievements
+
+Show recently earned badges.
+
+All statistics must update based on actual application activity.
+
+---
+
+# 7. JAVA LEARNING ACADEMY
+
+THIS IS ONE OF THE MOST IMPORTANT PARTS OF THE APPLICATION.
+
+The user must learn Java BEFORE entering the adventure game.
+
+Do not make the learning academy a collection of static notes.
+
+Build an interactive learning experience.
+
+## Learning interface
+
+Each module should contain:
+
+1. Introduction.
+2. Concept explanation.
+3. Animated or visual demonstration.
+4. Java syntax example.
+5. Line-by-line explanation.
+6. Interactive code example.
+7. Guided exercise.
+8. Independent practice.
+9. Knowledge assessment.
+10. Completion reward.
+
+Every concept must be explained in simple beginner-friendly English.
+
+Do not assume the learner knows programming terminology.
+
+Add a glossary for programming terms.
+
+## Six Java learning levels
+
+Create exactly six main learning levels for the initial version.
+
+Each level must have its own identity, theme, and story.
+
+### LEVEL 1 — THE BEGINNER'S FOREST
+
+Theme: A peaceful voxel forest.
+
+Story:
+
+The player enters an abandoned forest where the ancient communication system has stopped working.
+
+A guide character called Byte welcomes the player and explains that the world is controlled by instructions.
+
+The player must learn the basics of Java to activate the forest's first machine.
+
+Topics:
+
+- What is programming?
+- What is Java?
+- Where is Java used?
+- Basic Java program structure.
+- Main method.
+- System.out.println().
+- Comments.
+- Basic syntax.
+- Compilation and execution.
+
+Example:
+
+System.out.println("Hello CODELAND!");
+
+Learning objective:
+
+The learner understands what Java is and can identify the basic structure of a Java program.
+
+Practice:
+
+- Identify the correct Java output statement.
+- Complete missing code.
+- Predict program output.
+- Correct basic syntax mistakes.
+
+Adventure unlock:
+
+Activate the forest communication tower.
+
+### LEVEL 2 — THE VARIABLE VILLAGE
+
+Theme: A colorful village made of wooden and stone blocks.
+
+Story:
+
+The village storage system has been damaged. Villagers have lost track of their coins, resources, and supplies.
+
+The player must repair the storage system by learning how Java variables work.
+
+Topics:
+
+- Variables.
+- Declaring variables.
+- Initializing variables.
+- int.
+- double.
+- float.
+- char.
+- boolean.
+- String.
+- Naming conventions.
+- Type conversion.
+
+Example:
+
+int coins = 100;
+String playerName = "Alex";
+boolean hasKey = true;
+
+Learning objective:
+
+Understand how information is stored and used in a Java program.
+
+Practice:
+
+- Create variables.
+- Choose suitable data types.
+- Identify incorrect declarations.
+- Predict variable values.
+- Complete missing assignments.
+
+Adventure unlock:
+
+Repair the village storage system and open the resource vault.
+
+### LEVEL 3 — THE LOGIC CASTLE
+
+Theme: A medieval voxel castle with gates, bridges, switches, and secret passages.
+
+Story:
+
+The castle has multiple locked gates. Each gate opens only when a particular condition is satisfied.
+
+The player must learn Java decision-making.
+
+Topics:
+
+- Arithmetic operators.
+- Comparison operators.
+- Logical operators.
+- if statements.
+- if-else.
+- else-if.
+- Nested conditions.
+- switch statements.
+
+Example:
+
+int keys = 2;
+
+if (keys >= 2) {
+    System.out.println("Gate Open");
+} else {
+    System.out.println("Gate Locked");
+}
+
+Learning objective:
+
+Understand how programs make decisions.
+
+Practice:
+
+- Predict conditional outputs.
+- Complete missing conditions.
+- Choose correct operators.
+- Fix logical errors.
+- Create simple decision-making programs.
+
+Adventure unlock:
+
+Open the castle gates and rescue the trapped villagers.
+
+### LEVEL 4 — THE LOOPING MOUNTAINS
+
+Theme: A large mountainous world with repeated obstacles, moving platforms, waterfalls, and bridges.
+
+Story:
+
+A mountain railway has stopped working. The player needs to activate several machines that repeat the same operation multiple times.
+
+The player discovers that repeating instructions manually is inefficient.
+
+Topics:
+
+- What are loops?
+- for loop.
+- while loop.
+- do-while loop.
+- Loop initialization.
+- Loop conditions.
+- Increment and decrement.
+- Nested loops.
+- Infinite loops.
+- break and continue.
+
+Example:
+
+for (int i = 1; i <= 5; i++) {
+    System.out.println(i);
+}
+
+Learning objective:
+
+Understand repetition and how loops automate repeated tasks.
+
+Practice:
+
+- Predict loop output.
+- Complete loop conditions.
+- Identify infinite loops.
+- Fix incorrect increments.
+- Choose the right loop.
+
+Adventure unlock:
+
+Restart the mountain railway and cross the mountain region.
+
+### LEVEL 5 — THE METHOD KINGDOM
+
+Theme: A large futuristic voxel city with factories, robots, and automated machines.
+
+Story:
+
+The kingdom's machines are performing the same tasks repeatedly.
+
+The player must create reusable instructions to make the machines more efficient.
+
+Topics:
+
+- What are methods?
+- Creating methods.
+- Calling methods.
+- Parameters.
+- Arguments.
+- Return values.
+- Void methods.
+- Method overloading.
+- Basic scope.
+
+Example:
+
+public static int add(int a, int b) {
+    return a + b;
+}
+
+Learning objective:
+
+Understand how methods organize code into reusable blocks.
+
+Practice:
+
+- Identify methods.
+- Call methods.
+- Pass arguments.
+- Complete missing parameters.
+- Predict return values.
+- Fix method-related mistakes.
+
+Adventure unlock:
+
+Restore the city's automated systems.
+
+### LEVEL 6 — THE OBJECT KINGDOM
+
+Theme: A grand futuristic kingdom with a central energy core.
+
+Story:
+
+The kingdom's central energy core is failing.
+
+To repair it, the player must combine everything learned so far and understand how Java organizes real-world entities through objects.
+
+Topics:
+
+- Introduction to OOP.
+- Classes.
+- Objects.
+- Fields.
+- Constructors.
+- Encapsulation.
+- Inheritance.
+- Basic polymorphism.
+- Arrays and Strings as supporting topics.
+- Basic debugging and error identification.
+
+Example:
+
+class Player {
+    String name;
+    int health;
+
+    Player(String name, int health) {
+        this.name = name;
+        this.health = health;
+    }
+}
+
+Learning objective:
+
+Understand the fundamentals of object-oriented programming and apply previous Java knowledge.
+
+Practice:
+
+- Identify classes and objects.
+- Complete constructors.
+- Understand object properties.
+- Predict simple program behaviour.
+- Identify basic errors.
+- Complete a final mixed Java challenge.
+
+Adventure unlock:
+
+Restore the central energy core and complete CODELAND.
+
+IMPORTANT:
+
+Do not try to teach every advanced Java topic in excessive detail in the initial six levels.
+
+Keep the lessons beginner-friendly, accurate, progressive, and useful.
+
+---
+
+# 8. INTERACTIVE LESSON DESIGN
+
+Each lesson must have a polished interface.
+
+Use a three-column layout on desktop when appropriate:
+
+LEFT:
+- Lesson navigation.
+- Module progress.
+- Completed lessons.
+- Locked lessons.
+
+CENTER:
+- Concept explanation.
+- Examples.
+- Visual illustrations.
+- Interactive activities.
+
+RIGHT:
+- Java code editor.
+- Output panel.
+- Run button.
+- Reset button.
+- Hint button.
+
+For mobile, stack these elements vertically.
+
+## Java code editor
+
+Build an interactive code editor with:
+
+- Syntax highlighting.
+- Line numbers.
+- Indentation.
+- Editable code.
+- Run button.
+- Reset button.
+- Output console.
+- Error messages.
+- Clear button.
+
+Use a suitable editor library such as Monaco Editor or CodeMirror if supported.
+
+The learner should be able to type Java code.
+
+For execution, use a secure Java execution environment or a trusted sandboxed compiler service.
+
+Never execute arbitrary user-submitted code directly on the application server without isolation.
+
+If actual Java execution cannot be implemented in the first version, build a clearly limited Java practice simulator for the supported lesson exercises. Do not falsely claim that it is a complete Java compiler.
+
+## Feedback system
+
+When the learner submits code:
+
+- Check the result.
+- Show whether it is correct.
+- Explain mistakes in beginner-friendly language.
+- Highlight relevant code.
+- Provide a hint before revealing a solution.
+- Allow retrying.
+
+Do not simply show "Wrong Answer".
+
+Teach the learner why an answer is wrong.
+
+---
+
+# 9. PRACTICE ARENA
+
+Create a separate Java Practice Arena.
+
+This is where learners practise after completing their lessons.
+
+Organize exercises by:
+
+- Level.
+- Java topic.
+- Difficulty.
+- Completion status.
+
+Exercise types:
+
+1. Multiple-choice questions.
+2. Predict the output.
+3. Fill in missing code.
+4. Find the error.
+5. Arrange code in the correct order.
+6. Write a small Java program.
+7. Debug a broken program.
+
+Each question should have:
+
+- A clear problem statement.
+- An editable answer area when applicable.
+- A hint.
+- Submit button.
+- Immediate feedback.
+- Explanation.
+- Retry option.
+
+Provide beginner, intermediate, and advanced difficulty within each topic.
+
+Do not introduce topics the player has not learned yet without explaining them.
+
+---
+
+# 10. 3D ADVENTURE GAME
+
+This is the main entertainment component.
+
+Build a genuinely interactive 3D voxel adventure.
+
+Use Three.js or React Three Fiber if supported.
+
+Do not create a static image of a game.
+
+The player must be able to move, explore, interact, and complete objectives.
+
+## Camera
+
+Use a third-person camera.
+
+The player character should be visible in the world.
+
+Support:
+
+- WASD movement.
+- Arrow-key movement.
+- Mouse camera control where appropriate.
+- Touch controls for mobile.
+- Interaction key.
+- Pause menu.
+
+## World environment
+
+Every level should have its own visual environment matching its story.
+
+Level 1: Forest.
+
+Level 2: Village.
+
+Level 3: Castle.
+
+Level 4: Mountains.
+
+Level 5: Futuristic City.
+
+Level 6: Object Kingdom.
+
+## Gameplay mechanics
+
+Include:
+
+- Player movement.
+- Collision detection.
+- Obstacles.
+- Interactive doors.
+- Switches.
+- Bridges.
+- Collectible items.
+- NPCs.
+- Mission objectives.
+- Checkpoints.
+- Level completion conditions.
+- Pause and restart.
+
+## Java-based obstacles
+
+The core gameplay must connect directly to Java learning.
+
+Examples:
+
+LEVEL 1:
+The player reaches a broken communication machine. Complete a Java output statement to activate it.
+
+LEVEL 2:
+The player must enter the correct variable values to unlock a storage vault.
+
+LEVEL 3:
+A gate checks a condition. The player must write the correct if-else logic.
+
+LEVEL 4:
+The player must use a loop to activate multiple platforms.
+
+LEVEL 5:
+The player must create and call a method to operate a machine.
+
+LEVEL 6:
+The player combines classes, objects, and earlier concepts to repair the central energy core.
+
+The game must evaluate the actual intended task, not simply accept any button click.
+
+The player should be able to see the relationship between their code and the character's actions.
+
+---
+
+# 11. STORY AND CHARACTERS
+
+Create a consistent storyline connecting all six levels.
+
+The overarching story:
+
+CODELAND was once a thriving world powered by an ancient programming system.
+
+A mysterious system failure has damaged the six regions.
+
+Each region has lost an essential part of its programming knowledge.
+
+The player is an explorer selected to restore the world.
+
+A friendly guide named Byte helps the player understand Java.
+
+Each world introduces a different character with its own personality and story.
+
+Include:
+
+- Byte: Main guide.
+- Village inventor: Level 2.
+- Castle guardian: Level 3.
+- Mountain engineer: Level 4.
+- City architect: Level 5.
+- Core guardian: Level 6.
+
+Use short dialogues and cinematic introductions.
+
+Do not make the story excessively long. Keep it entertaining and focused on learning.
+
+---
+
+# 12. LEVEL PROGRESSION AND UNLOCK SYSTEM
+
+Create six main levels.
+
+Each level should have:
+
+- A story introduction.
+- Learning modules.
+- Practice exercises.
+- A knowledge check.
+- A 3D mission.
+- A completion reward.
+
+A player must complete the required learning content and pass the readiness assessment before entering the corresponding adventure.
+
+The next level unlocks only after completing the previous level's required learning and mission.
+
+Display locked levels with:
+
+- Lock icons.
+- Preview artwork.
+- Required prerequisites.
+
+Display completed levels with:
+
+- Completion badge.
+- Score.
+- XP earned.
+- Time taken.
+- Best result.
+
+Allow players to replay completed levels.
+
+Replaying must not incorrectly duplicate completion rewards.
+
+---
+
+# 13. DAILY STREAK SYSTEM
+
+Create a fully functional daily learning streak system.
+
+Display a flame icon and the current streak prominently on the dashboard.
+
+Example:
+
+🔥 7-day streak
+
+The streak should increase when a user completes at least one meaningful learning activity in a calendar day.
+
+Qualifying activities:
+
+- Completing a Java lesson.
+- Completing a practice exercise.
+- Completing an adventure mission.
+
+Simply opening the application must NOT count.
+
+Display:
+
+- Current streak.
+- Longest streak.
+- Weekly activity calendar.
+- Daily completion status.
+- Streak milestones.
+
+Milestone rewards:
+
+- 3 days: Starter badge.
+- 7 days: Consistency badge.
+- 14 days: Dedicated learner badge.
+- 30 days: Java explorer badge.
+- 60 days: Master learner badge.
+- 100 days: CODELAND legend badge.
+
+Use the user's local date and timezone correctly.
+
+Do not increment a streak more than once per day.
+
+Do not reset the streak simply because the user refreshes the website.
+
+Persist streak data reliably.
+
+If the user misses a day, the streak should update correctly on their next visit.
+
+---
+
+# 14. LEADERBOARD SYSTEM
+
+Build a dedicated leaderboard page.
+
+The leaderboard should look like a professional gaming ranking system.
+
+Include tabs:
+
+- Daily.
+- Weekly.
+- All Time.
+
+Display:
+
+- Rank.
+- Player avatar.
+- Username.
+- XP.
+- Current streak.
+- Achievement count.
+
+Highlight the current player.
+
+Show the top three players with special visual treatment.
+
+Add filters where appropriate.
+
+## XP scoring system
+
+Award XP for actual learning activity.
+
+Suggested rewards:
+
+- Completing a lesson: 50 XP.
+- Completing a practice exercise: 10 XP.
+- Passing a level assessment: 30 XP.
+- Completing an adventure mission: 100 XP.
+- Completing a daily goal: 25 XP.
+- Completing a streak milestone: bonus XP.
+
+Avoid rewarding repeated submissions endlessly.
+
+Prevent duplicate XP farming by recording completed activities.
+
+The leaderboard must use actual stored scores.
+
+For the first demo, you may implement a local leaderboard with demo player records, but clearly distinguish demo data from real registered players.
+
+For a real multi-user leaderboard, use a backend database and server-side score validation.
+
+---
+
+# 15. XP, COINS, BADGES AND ACHIEVEMENTS
+
+Create a reward system.
+
+Players earn:
+
+- XP.
+- Coins.
+- Level badges.
+- Streak badges.
+- Completion badges.
+- Special achievements.
+
+Possible achievements:
+
+- First Steps: Complete the first lesson.
+- Hello World: Successfully complete the first Java program.
+- Variable Master: Complete the variables module.
+- Logic Explorer: Complete the conditions module.
+- Loop Champion: Complete the loops module.
+- Method Maker: Complete the methods module.
+- Object Architect: Complete the OOP module.
+- Seven-Day Scholar: Maintain a seven-day streak.
+- CODELAND Champion: Complete all six adventure worlds.
+
+Show achievement animations when a badge is unlocked.
+
+Include an achievements gallery on the profile page.
+
+---
+
+# 16. PLAYER PROFILE
+
+Create a polished player profile.
+
+Include:
+
+- Avatar.
+- Username.
+- Total XP.
+- Current rank.
+- Current streak.
+- Longest streak.
+- Lessons completed.
+- Adventure missions completed.
+- Badges earned.
+- Learning history.
+- Activity calendar.
+- Level progress.
+
+Allow users to customize their display name and avatar.
+
+---
+
+# 17. TECHNICAL ARCHITECTURE
+
+Use a modern, maintainable web application architecture.
+
+Recommended stack:
+
+Frontend:
+- React.
+- TypeScript.
+- Tailwind CSS.
+- Framer Motion.
+
+3D:
+- Three.js.
+- React Three Fiber.
+- Drei, if useful.
+
+Code editor:
+- Monaco Editor or CodeMirror.
+
+Backend:
+- Supabase or Firebase.
+
+Database:
+- PostgreSQL through Supabase, or Firestore through Firebase.
+
+Authentication:
+- Supabase Auth or Firebase Authentication.
+
+Persistence:
+- Backend database for accounts, progress, streaks, XP, and leaderboard records.
+- Local storage only for temporary preferences or offline demo state.
+
+## Data models
+
+Create appropriate data structures for:
+
+Users:
+- id
+- username
+- avatar
+- created_at
+
+Learning progress:
+- user_id
+- level_id
+- lesson_id
+- completion_status
+- score
+- completed_at
+
+XP transactions:
+- user_id
+- activity_id
+- xp_amount
+- created_at
+
+Streaks:
+- user_id
+- current_streak
+- longest_streak
+- last_activity_date
+
+Achievements:
+- user_id
+- achievement_id
+- unlocked_at
+
+Leaderboard:
+- user_id
+- total_xp
+- ranking_period
+
+Adventure progress:
+- user_id
+- world_id
+- mission_id
+- completion_status
+- best_score
+
+Validate XP and achievement awards on the backend wherever possible.
+
+Do not expose secret API keys in frontend code.
+
+---
+
+# 18. FUNCTIONAL REQUIREMENTS
+
+This is extremely important.
+
+Every visible button must work.
+
+Every navigation link must work.
+
+Every lesson must open.
+
+Every level must have actual content.
+
+Every practice exercise must accept and evaluate answers.
+
+The player must be able to move inside the 3D environment.
+
+The player must be able to complete missions.
+
+XP must update correctly.
+
+Streaks must update correctly.
+
+Leaderboard rankings must update from stored scores.
+
+Progress must persist after refreshing the page.
+
+The player must be able to log out and log back in without losing saved progress.
+
+Do not create fake functionality.
+
+Do not use placeholder buttons that do nothing.
+
+Do not show random progress numbers that are unrelated to player activity.
+
+Do not display a global leaderboard as real if it only contains local demo data.
+
+If a feature requires an external service or API key, clearly identify the requirement and provide a working fallback for the demo.
+
+---
+
+# 19. RESPONSIVE DESIGN AND PERFORMANCE
+
+Support:
+
+- Desktop.
+- Laptop.
+- Tablet.
+- Mobile.
+
+The 3D environment must adapt to different screen sizes.
+
+Use optimized 3D models and textures.
+
+Avoid unnecessarily large assets.
+
+Lazy-load 3D worlds.
+
+Keep the dashboard fast.
+
+Provide loading screens when entering a world.
+
+Show helpful errors if a 3D asset fails to load.
+
+Include a lower-graphics option for less powerful devices.
+
+---
+
+# 20. DEVELOPMENT PRIORITIES
+
+Build in stages, but maintain one coherent application.
+
+Priority 1:
+- Landing page.
+- Authentication or working demo profile.
+- Dashboard.
+- Java Academy.
+- Six learning modules.
+
+Priority 2:
+- Interactive code editor.
+- Practice exercises.
+- Assessments.
+- Level unlocking.
+
+Priority 3:
+- First playable 3D world.
+- Player movement.
+- Obstacles.
+- Java-powered mission.
+
+Priority 4:
+- Remaining five worlds.
+- Story interactions.
+- Rewards.
+
+Priority 5:
+- Daily streak.
+- Leaderboard.
+- Achievements.
+- Persistent progress.
+
+If development time or tool limitations prevent all six worlds from being fully implemented immediately, make the first world genuinely playable and build the other five as honest locked previews. Never represent unfinished features as working.
+
+---
+
+# 21. FINAL QUALITY CHECK
+
+Before declaring the application complete, test:
+
+1. Can a new player register or enter demo mode?
+2. Can they access the Java Academy?
+3. Can they complete a lesson?
+4. Can they type and run supported Java exercises?
+5. Does the assessment evaluate answers correctly?
+6. Does completing a lesson update progress?
+7. Does the player unlock the correct adventure?
+8. Can they move around the 3D world?
+9. Can they interact with obstacles?
+10. Can they complete a mission?
+11. Is XP awarded exactly once for each qualifying activity?
+12. Does the streak increase only once per qualifying day?
+13. Does the leaderboard reflect stored XP?
+14. Does progress survive a refresh?
+15. Does the application work on mobile and desktop?
+
+Fix errors before considering the application complete.
+
+---
+
+# FINAL DESIGN INSTRUCTION
+
+I want CODELAND to feel like a combination of:
+
+- The immersive block-based exploration of Minecraft.
+- The structured learning progression of a professional coding education platform.
+- The rewards and progression of a modern game.
+- The clean interface of a premium SaaS product.
+
+The most important experience is:
+
+**LEARN JAVA → PRACTISE JAVA → UNLOCK A WORLD → SOLVE A MISSION → EARN REWARDS → CONTINUE LEARNING.**
+
+Build a cohesive, polished, visually impressive and genuinely functional application.
+
+Do not stop after creating the landing page.
+
+Do not deliver only a design concept.
+
+Build the actual application, connect the pages, implement the state and gameplay logic, and test the complete player journey.
+
+Make CODELAND look like a product that could be presented confidently at a national-level hackathon.

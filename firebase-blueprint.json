@@ -1,0 +1,803 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Primary player profile, Java learning progress, daily streak state, and preferences (no PII).",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Immutable Firebase Auth UID of the player.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "username": {
+          "type": "string",
+          "description": "Unique-style handle chosen during onboarding.",
+          "minLength": 2,
+          "maxLength": 24,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Display name shown on dashboard and profile.",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "avatarId": {
+          "type": "string",
+          "description": "Selected voxel blocky character identifier.",
+          "minLength": 1,
+          "maxLength": 24,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "experienceLevel": {
+          "type": "string",
+          "description": "Initial programming familiarity level selected during onboarding.",
+          "enum": ["beginner", "some_java", "some_programming"],
+          "maxLength": 24
+        },
+        "onboardingCompleted": {
+          "type": "boolean",
+          "description": "Whether player onboarding has been completed."
+        },
+        "totalXp": {
+          "type": "number",
+          "description": "Cumulative XP earned across lessons, exercises, assessments, and missions."
+        },
+        "dailyXp": {
+          "type": "number",
+          "description": "XP earned in the current local calendar day."
+        },
+        "weeklyXp": {
+          "type": "number",
+          "description": "XP earned in the current ISO week."
+        },
+        "lastDailyKey": {
+          "type": "string",
+          "description": "Local YYYY-MM-DD key corresponding to dailyXp.",
+          "maxLength": 16
+        },
+        "lastWeeklyKey": {
+          "type": "string",
+          "description": "Local YYYY-Www key corresponding to weeklyXp.",
+          "maxLength": 16
+        },
+        "coins": {
+          "type": "number",
+          "description": "Total golden coins earned by the player."
+        },
+        "currentStreak": {
+          "type": "number",
+          "description": "Current consecutive daily learning streak."
+        },
+        "longestStreak": {
+          "type": "number",
+          "description": "All-time longest consecutive daily learning streak."
+        },
+        "lastActivityDate": {
+          "type": "string",
+          "description": "Local YYYY-MM-DD date of last qualifying learning activity.",
+          "maxLength": 16
+        },
+        "completedLessons": {
+          "type": "array",
+          "description": "Bounded list (max 150) of completed Java lesson IDs (L1..L100 and legacy lesson IDs)."
+        },
+        "completedExercises": {
+          "type": "array",
+          "description": "Bounded list (max 250) of completed Practice Arena exercise IDs."
+        },
+        "passedAssessments": {
+          "type": "array",
+          "description": "Bounded list (max 150) of passed guided practice & readiness assessment IDs (P1..P100)."
+        },
+        "completedMissions": {
+          "type": "array",
+          "description": "Bounded list (max 150) of completed 3D level and world mission IDs (M1..M100 and world-1..world-6)."
+        },
+        "unlockedAchievements": {
+          "type": "array",
+          "description": "Bounded list (max 80) of unlocked achievement and world reward badge IDs."
+        },
+        "claimedDailyGoals": {
+          "type": "array",
+          "description": "Bounded list of daily goal keys claimed for today."
+        },
+        "activityDates": {
+          "type": "array",
+          "description": "Bounded list of recent YYYY-MM-DD dates with qualifying learning activity."
+        },
+        "graphicsQuality": {
+          "type": "string",
+          "description": "3D rendering quality preference.",
+          "enum": ["high", "low"],
+          "maxLength": 10
+        },
+        "soundMuted": {
+          "type": "boolean",
+          "description": "Whether procedural game and reward sound effects are muted."
+        },
+        "theme": {
+          "type": "string",
+          "description": "UI color theme preference.",
+          "enum": ["dark", "light"],
+          "maxLength": 10
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of account creation."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of latest update."
+        }
+      },
+      "required": [
+        "uid",
+        "username",
+        "displayName",
+        "avatarId",
+        "experienceLevel",
+        "onboardingCompleted",
+        "totalXp",
+        "dailyXp",
+        "weeklyXp",
+        "lastDailyKey",
+        "lastWeeklyKey",
+        "coins",
+        "currentStreak",
+        "longestStreak",
+        "lastActivityDate",
+        "completedLessons",
+        "completedExercises",
+        "passedAssessments",
+        "completedMissions",
+        "unlockedAchievements",
+        "claimedDailyGoals",
+        "activityDates",
+        "graphicsQuality",
+        "soundMuted",
+        "theme",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "UserPrivateInfo": {
+      "title": "UserPrivateInfo",
+      "description": "Isolated PII document storing the authenticated user's email address.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 254
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "email", "createdAt", "updatedAt"]
+    },
+    "LeaderboardEntry": {
+      "title": "LeaderboardEntry",
+      "description": "Publicly readable non-PII ranking record synced atomically with UserProfile.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "username": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 24,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "avatarId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 24,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "visibility": {
+          "type": "string",
+          "enum": ["public"],
+          "maxLength": 16
+        },
+        "totalXp": {
+          "type": "number"
+        },
+        "dailyXp": {
+          "type": "number"
+        },
+        "weeklyXp": {
+          "type": "number"
+        },
+        "lastDailyKey": {
+          "type": "string",
+          "maxLength": 16
+        },
+        "lastWeeklyKey": {
+          "type": "string",
+          "maxLength": 16
+        },
+        "currentStreak": {
+          "type": "number"
+        },
+        "achievementsCount": {
+          "type": "number"
+        },
+        "lessonsCompletedCount": {
+          "type": "number"
+        },
+        "missionsCompletedCount": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "uid",
+        "username",
+        "displayName",
+        "avatarId",
+        "visibility",
+        "totalXp",
+        "dailyXp",
+        "weeklyXp",
+        "lastDailyKey",
+        "lastWeeklyKey",
+        "currentStreak",
+        "achievementsCount",
+        "lessonsCompletedCount",
+        "missionsCompletedCount",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "MissionRecord": {
+      "title": "MissionRecord",
+      "description": "Per-world 3D adventure mission completion record and best performance metrics.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "worldId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "bestScore": {
+          "type": "number"
+        },
+        "bestTimeSeconds": {
+          "type": "number"
+        },
+        "xpEarned": {
+          "type": "number"
+        },
+        "completionsCount": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "worldId",
+        "bestScore",
+        "bestTimeSeconds",
+        "xpEarned",
+        "completionsCount",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "ActivityLog": {
+      "title": "ActivityLog",
+      "description": "Immutable XP transaction and learning activity record under a player profile.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "activityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "activityType": {
+          "type": "string",
+          "enum": [
+            "daily_login",
+            "lesson",
+            "exercise",
+            "assessment",
+            "mission",
+            "multiplayer_match",
+            "daily_goal",
+            "streak_milestone"
+          ],
+          "maxLength": 24
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "xpAmount": {
+          "type": "number"
+        },
+        "coinsAmount": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "activityId",
+        "activityType",
+        "title",
+        "xpAmount",
+        "coinsAmount",
+        "createdAt"
+      ]
+    },
+    "UserStreak": {
+      "title": "UserStreak",
+      "description": "Normalized daily streak tracking document per player.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "currentStreak": {
+          "type": "number"
+        },
+        "longestStreak": {
+          "type": "number"
+        },
+        "lastActivityDate": {
+          "type": "string",
+          "maxLength": 16,
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "totalActiveDays": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "currentStreak",
+        "longestStreak",
+        "lastActivityDate",
+        "totalActiveDays",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "StreakActivity": {
+      "title": "StreakActivity",
+      "description": "Daily qualifying activity entry keyed by YYYY-MM-DD under /userStreaks/{userId}/activities/{dateKey} enforcing unique (userId, activityDate).",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "activityDate": {
+          "type": "string",
+          "maxLength": 16,
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "activityType": {
+          "type": "string",
+          "enum": ["daily_login", "lesson", "exercise", "assessment", "mission", "multiplayer_match"],
+          "maxLength": 24
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["userId", "activityDate", "activityType", "createdAt"]
+    },
+    "GameRoom": {
+      "title": "GameRoom",
+      "description": "Private multiplayer coding room metadata and lifecycle state.",
+      "type": "object",
+      "properties": {
+        "roomCode": {
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 8,
+          "pattern": "^[A-Z2-9]+$"
+        },
+        "roomName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 42
+        },
+        "hostUserId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "maxPlayers": {
+          "type": "number"
+        },
+        "gameMode": {
+          "type": "string",
+          "enum": ["coding_race", "coop_adventure", "challenge_mode"],
+          "maxLength": 24
+        },
+        "selectedLevel": {
+          "type": "number",
+          "description": "Selected CODELAND campaign level (1..100)."
+        },
+        "javaDifficulty": {
+          "type": "string",
+          "enum": ["Beginner", "Intermediate", "Advanced"],
+          "maxLength": 16
+        },
+        "allowFriendsToInvite": {
+          "type": "boolean"
+        },
+        "roomStatus": {
+          "type": "string",
+          "enum": ["waiting", "starting", "in_progress", "completed", "cancelled", "expired"],
+          "maxLength": 16
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "roomCode",
+        "roomName",
+        "hostUserId",
+        "maxPlayers",
+        "gameMode",
+        "selectedLevel",
+        "javaDifficulty",
+        "allowFriendsToInvite",
+        "roomStatus",
+        "createdAt",
+        "expiresAt",
+        "updatedAt"
+      ]
+    },
+    "RoomMember": {
+      "title": "RoomMember",
+      "description": "Player membership under /gameRooms/{roomId}/members/{memberUid} enforcing unique (roomId, userId).",
+      "type": "object",
+      "properties": {
+        "roomId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "username": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 24,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "avatarId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 24,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "isHost": {
+          "type": "boolean"
+        },
+        "isReady": {
+          "type": "boolean"
+        },
+        "joinedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "roomId",
+        "userId",
+        "username",
+        "avatarId",
+        "isHost",
+        "isReady",
+        "joinedAt",
+        "updatedAt"
+      ]
+    },
+    "RoomInvitation": {
+      "title": "RoomInvitation",
+      "description": "Direct friend invitation to join a private CODELAND room.",
+      "type": "object",
+      "properties": {
+        "roomId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "roomCode": {
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 8,
+          "pattern": "^[A-Z2-9]+$"
+        },
+        "senderUserId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "recipientUserId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "invitationStatus": {
+          "type": "string",
+          "enum": ["pending", "accepted", "declined", "expired"],
+          "maxLength": 16
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "roomId",
+        "roomCode",
+        "senderUserId",
+        "recipientUserId",
+        "invitationStatus",
+        "createdAt",
+        "expiresAt",
+        "updatedAt"
+      ]
+    },
+    "WorldState": {
+      "title": "WorldState",
+      "description": "Persistent 3D world construction stages, player coordinates, unlocked cosmetics, and NPC registration state per world.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "worldId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "completedLevelKeys": {
+          "type": "array",
+          "description": "Bounded list (max 12) of completed World 1 level keys (W1_L1..W1_L10)."
+        },
+        "completedTaskIds": {
+          "type": "array",
+          "description": "Bounded list (max 50) of completed Java construction task IDs."
+        },
+        "purchasedSupplyIds": {
+          "type": "array",
+          "description": "Bounded list (max 20) of purchased World 1 construction supply bundle IDs."
+        },
+        "collectedSupplyIds": {
+          "type": "array",
+          "description": "Bounded list (max 20) of physically collected 3D World 1 construction supply bundle IDs."
+        },
+        "structureStages": {
+          "type": "object",
+          "description": "Map of the 10 Beginner's Forest site IDs to integer construction stages (0..4)."
+        },
+        "playerX": {
+          "type": "number"
+        },
+        "playerY": {
+          "type": "number"
+        },
+        "playerZ": {
+          "type": "number"
+        },
+        "unlockedForestOutfit": {
+          "type": "boolean"
+        },
+        "equippedForestOutfit": {
+          "type": "boolean"
+        },
+        "unlockedCompanionAccessory": {
+          "type": "boolean"
+        },
+        "equippedCompanionAccessory": {
+          "type": "boolean"
+        },
+        "registeredVillagerName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "registeredCrystalCount": {
+          "type": "number"
+        },
+        "cinematicTourCompleted": {
+          "type": "boolean"
+        },
+        "freeRoamUnlocked": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "worldId",
+        "completedLevelKeys",
+        "completedTaskIds",
+        "purchasedSupplyIds",
+        "collectedSupplyIds",
+        "structureStages",
+        "playerX",
+        "playerY",
+        "playerZ",
+        "unlockedForestOutfit",
+        "equippedForestOutfit",
+        "unlockedCompanionAccessory",
+        "equippedCompanionAccessory",
+        "registeredVillagerName",
+        "registeredCrystalCount",
+        "cinematicTourCompleted",
+        "freeRoamUnlocked",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Owner-restricted player profile, progress sets, streak state, and preferences."
+    },
+    "/users/{userId}/private/{docId}": {
+      "schema": "UserPrivateInfo",
+      "description": "Strictly isolated owner-only PII subcollection storing email."
+    },
+    "/users/{userId}/missionRecords/{worldId}": {
+      "schema": "MissionRecord",
+      "description": "Owner-restricted 3D adventure mission records for each of the six worlds."
+    },
+    "/users/{userId}/worldState/{worldId}": {
+      "schema": "WorldState",
+      "description": "Owner-restricted persistent 3D settlement construction stages, coordinates, and world unlocks."
+    },
+    "/users/{userId}/activityLogs/{logId}": {
+      "schema": "ActivityLog",
+      "description": "Owner-restricted immutable XP transaction and activity history logs."
+    },
+    "/leaderboard/{userId}": {
+      "schema": "LeaderboardEntry",
+      "description": "Non-PII public leaderboard standings synced atomically with /users/{userId}."
+    },
+    "/userStreaks/{userId}": {
+      "schema": "UserStreak",
+      "description": "Normalized streak summary per user."
+    },
+    "/userStreaks/{userId}/activities/{dateKey}": {
+      "schema": "StreakActivity",
+      "description": "Unique daily streak activity records keyed by YYYY-MM-DD."
+    },
+    "/gameRooms/{roomId}": {
+      "schema": "GameRoom",
+      "description": "Private multiplayer coding rooms."
+    },
+    "/gameRooms/{roomId}/members/{memberUid}": {
+      "schema": "RoomMember",
+      "description": "Unique room memberships under each game room."
+    },
+    "/roomInvitations/{inviteId}": {
+      "schema": "RoomInvitation",
+      "description": "Direct friend invitations to private game rooms."
+    }
+  }
+}
